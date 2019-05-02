@@ -3,10 +3,11 @@
 //== War Games Web Server ======================================================
 
 //-- Dependencies --------------------------------
+require('dotenv').config();
 const express = require('express');
 
 //-- Project Constants ---------------------------
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 //-- Configure Server ----------------------------
 const server = express();
