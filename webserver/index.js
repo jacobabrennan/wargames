@@ -5,6 +5,7 @@
 //-- Dependencies --------------------------------
 require('dotenv').config();
 const express = require('express');
+const auth = require('./auth.js');
 const error = require('./error.js');
 
 //-- Project Constants ---------------------------
@@ -17,11 +18,10 @@ server.listen(PORT, () => {
 });
 
 //-- Middleware ----------------------------------
+server.use(express.json());
 
 //-- Routing -------------------------------------
-server.use("/auth", function(request, response, next){
-    throw error.httpError(404, "Not Found");
-});
+server.use("/auth", auth);
 
 //-- Error Handling ------------------------------
 server.use(error.handler);
