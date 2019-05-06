@@ -1,4 +1,30 @@
 
+//-- Temp Scaffolding ----------------------------
+const databaseTemp = {
+    users: {},
+    hash(password) {
+        if(password != '') {
+            return 'asdf';
+        }
+    },
+    async addUser(username, password) {
+        this.users[username] = this.hash(password);
+        return {
+            id: 1,
+            username: username,
+        };
+    },
+    async authenticate(username, password) {
+        const hashTest = this.hash(password);
+        const hashStored = this.users[username];
+        if(hashTest === hashStored) {
+            return {
+                id: 1,
+                username: username,
+            }
+        }
+    },
+};
 
 /*== Authentication Route Handler ==============================================
 
@@ -27,7 +53,7 @@ web tokens.
 //-- Dependencies --------------------------------
 const express      = require('express');
 const jsonWebToken = require('jsonwebtoken');
-const error        = require('./error.js');
+const errorHandler = require('./error_handler.js');
 
 //-- Project Constants ---------------------------
 const JSONWEBTOKEN_SECRET = process.env.JSONWEBTOKEN_SECRET;
@@ -72,7 +98,7 @@ async function authenticate(request, response, next) {
         // Fail if no token provided
         const token = request.headers.authorization;
         if(!token){
-            throw error.httpError(401, ERROR_AUTHENTICATION_FAILURE);
+            throw errorHandler.httpError(401, ERROR_AUTHENTICATION_FAILURE);
         }
         // Setup Callback on Promise
         let validationCallback;
@@ -95,7 +121,7 @@ async function authenticate(request, response, next) {
         next();
     }
     catch(error) {
-        throw error.httpError(401, ERROR_AUTHENTICATION_FAILURE);
+        throw errorHandler.httpError(401, ERROR_AUTHENTICATION_FAILURE);
     }
 };
 
@@ -117,7 +143,9 @@ async function handleRegistration(request, response, next) {
         });
         // Move to next middleware
         next();
-    } catch(error) { next(error);}
+    } catch(error) {
+        next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
+    }
 }
 
 //-- User Log In ---------------------------------
@@ -129,7 +157,7 @@ async function handleLogin(request, response, next) {
         const user = await databaseTemp.authenticate(username, password);
         // Handle failed authentication
         if(!user) {
-            throw error.httpError(401, MESSAGE_AUTHENTICATION_FAILURE);
+            throw errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE);
         }
         // Login User and respond with success
         const loginToken = loginUser(user);
@@ -140,6 +168,6 @@ async function handleLogin(request, response, next) {
         // Move to next middleware
         next();
     } catch(error) {
-        throw error.httpError(401, MESSAGE_AUTHENTICATION_FAILURE);
+        next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
     }
 }
