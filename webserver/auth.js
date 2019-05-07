@@ -3,9 +3,7 @@
 const databaseTemp = {
     users: {},
     hash(password) {
-        if(password != '') {
-            return 'asdf';
-        }
+        return password;
     },
     validateUsername(username) { return username;},
     validatePassword(password) { return password;},
@@ -27,12 +25,16 @@ const databaseTemp = {
     async authenticate(username, password) {
         const hashTest = this.hash(password);
         const hashStored = this.users[username];
-        if(hashTest === hashStored) {
-            return {
-                id: 1,
-                username: username,
-            }
+        if(!this.users.hasOwnProperty(username)) {
+            return false;
         }
+        if(hashTest !== hashStored) {
+            return false;
+        }
+        return {
+            id: 1,
+            username: username,
+        };
     },
 };
 
@@ -43,9 +45,11 @@ following endpoints are provided:
 
 POST /register
 POST /login
+GET /testget
 
-For both endpoints, data must be supplied in the body of the request, in the
-following format:
+The GET endpoint is provided to test authentication via automated testing.
+For both POST endpoints, data must be supplied in the body of the request, in
+the following format:
 {
     "username": "some name string",
     "password": "secret password"
@@ -69,6 +73,7 @@ const errorHandler = require('./error_handler.js');
 const JSONWEBTOKEN_SECRET = process.env.JSONWEBTOKEN_SECRET;
 const URL_AUTHENTICATION_REGISTER = '/register';
 const URL_AUTHENTICATION_LOGIN    = '/login';
+const URL_AUTHENTICATION_TEST     = '/testget';
 const TIME_TOKEN_EXPIRATION = '1m';
 const MESSAGE_AUTHENTICATION_SUCCESS = 'Login Successful';
 const MESSAGE_AUTHENTICATION_FAILURE = 'Unauthorized Access';
@@ -83,6 +88,7 @@ router.authenticate = authenticate;
 //-- Route Definitions ---------------------------
 router.post(URL_AUTHENTICATION_REGISTER, handleRegistration);
 router.post(URL_AUTHENTICATION_LOGIN   , handleLogin       );
+router.get (URL_AUTHENTICATION_TEST, authenticate, handleTest);
 
 
 //== Utility Functions =========================================================
@@ -108,7 +114,7 @@ async function authenticate(request, response, next) {
         // Fail if no token provided
         const token = request.headers.authorization;
         if(!token){
-            throw errorHandler.httpError(401, ERROR_AUTHENTICATION_FAILURE);
+            throw errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE);
         }
         // Setup Callback on Promise
         let validationCallback;
@@ -129,9 +135,8 @@ async function authenticate(request, response, next) {
         request.token = decodedToken;
         // Move to next middleware
         next();
-    }
-    catch(error) {
-        throw errorHandler.httpError(401, ERROR_AUTHENTICATION_FAILURE);
+    } catch(error) {
+        next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
     }
 };
 
@@ -180,4 +185,12 @@ async function handleLogin(request, response, next) {
     } catch(error) {
         next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
     }
+}
+
+//-- Automated Testing of Authorized Get ---------
+async function handleTest(request, response, next) {
+    response.status(200).json({
+        'message': 'test complete',
+    });
+    next();
 }
