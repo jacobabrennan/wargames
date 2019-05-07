@@ -7,7 +7,17 @@ const databaseTemp = {
             return 'asdf';
         }
     },
+    validateUsername(username) { return username;},
+    validatePassword(password) { return password;},
     async addUser(username, password) {
+        username = this.validateUsername(username);
+        password = this.validatePassword(password);
+        if(!username || !password) {
+            throw Error("Invalid username / password");
+        }
+        if(this.users[username]) {
+            throw Error("Username already exists");
+        }
         this.users[username] = this.hash(password);
         return {
             id: 1,
@@ -161,7 +171,7 @@ async function handleLogin(request, response, next) {
         }
         // Login User and respond with success
         const loginToken = loginUser(user);
-        response.status(201).json({
+        response.status(200).json({
             'message': MESSAGE_AUTHENTICATION_SUCCESS,
             'token': loginToken,
         });
