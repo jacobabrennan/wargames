@@ -61,6 +61,28 @@ describe('Test Authentication Module', () => {
         });
     });
     describe('Test Login', () => {
-        
+        const testUrl = '/auth/login';
+        const testCredentials = {
+            'username': 'Test',
+            'password': '12345',
+        };
+        beforeAll(async function () {
+            await request(webserver)
+                .post(testUrl)
+                .send(testCredentials);
+        });
+        test('handles proper request', async function () {
+            let response = await request(webserver)
+                .post(testUrl)
+                .send(testCredentials);
+            expect(response.status).toBe(200);
+            expect(response.body.token).toBeTruthy();
+        });
+        test('checks for valid username and password', async function () {
+            let response = await request(webserver)
+                .post(testUrl)
+                .send({});
+            expect(response.status).toBe(401);
+        });
     });
 });
