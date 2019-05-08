@@ -1,42 +1,4 @@
 
-//-- Temp Scaffolding ----------------------------
-const databaseTemp = {
-    users: {},
-    hash(password) {
-        return password;
-    },
-    validateUsername(username) { return username;},
-    validatePassword(password) { return password;},
-    async addUser(username, password) {
-        username = this.validateUsername(username);
-        password = this.validatePassword(password);
-        if(!username || !password) {
-            throw Error("Invalid username / password");
-        }
-        if(this.users[username]) {
-            throw Error("Username already exists");
-        }
-        this.users[username] = this.hash(password);
-        return {
-            id: 1,
-            username: username,
-        };
-    },
-    async authenticate(username, password) {
-        const hashTest = this.hash(password);
-        const hashStored = this.users[username];
-        if(!this.users.hasOwnProperty(username)) {
-            return false;
-        }
-        if(hashTest !== hashStored) {
-            return false;
-        }
-        return {
-            id: 1,
-            username: username,
-        };
-    },
-};
 
 /*== Authentication Route Handler ==============================================
 
@@ -68,6 +30,7 @@ web tokens.
 const express      = require('express');
 const jsonWebToken = require('jsonwebtoken');
 const errorHandler = require('./error_handler.js');
+const dataUsers    = require('./data_users.js');
 
 //-- Project Constants ---------------------------
 const JSONWEBTOKEN_SECRET = process.env.JSONWEBTOKEN_SECRET;
@@ -149,7 +112,7 @@ async function handleRegistration(request, response, next) {
         // Attempt to register a new user
         const username   = request.body.username;
         const password   = request.body.password;
-        const user = await databaseTemp.addUser(username, password);
+        const user = await dataUsers.addUser(username, password);
         // Login User and respond with success
         const loginToken = loginUser(user);
         response.status(201).json({
@@ -169,7 +132,7 @@ async function handleLogin(request, response, next) {
         // Check if supplied username and password are valid
         const username = request.body.username;
         const password = request.body.password;
-        const user = await databaseTemp.authenticate(username, password);
+        const user = await dataUsers.authenticate(username, password);
         // Handle failed authentication
         if(!user) {
             throw errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE);
