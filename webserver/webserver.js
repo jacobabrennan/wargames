@@ -18,4 +18,7 @@ server.use(express.json());
 server.use("/auth", auth);
 
 //-- Error Handling ------------------------------
+server.use(function (request, response, next) {
+    next(error.httpError(404, 'Resource not found'));
+});
 server.use(error.handler);

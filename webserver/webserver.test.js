@@ -5,10 +5,21 @@
 //-- Dependencies --------------------------------
 const webserver = require('./webserver.js');
 const request = require('supertest');
-const jsonWebToken = require('jsonwebtoken');
 
 
 //== Tests =====================================================================
+
+//-- Test Error Handling -------------------------
+describe('Test Error Handling', () => {
+    test('routes and formats errors correctly', async function () {
+        let response = await request(webserver)
+            .get('/404');
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({
+            'error': 'Resource not found',
+        });
+    });
+});
 
 //-- Test auth.js - Authentication ---------------
 /*
