@@ -5,13 +5,19 @@
 //-- Project constants ---------------------------
 const TABLE_CREDENTIALS = 'credentials';
 const FIELD_ID = 'id';
+const FIELD_USERNAME = 'username';
 const FIELD_HASH = 'hash';
+const LIMIT_USERNAME = 256;
 const LIMIT_HASH = 256;
 
 //-- Create Table --------------------------------
 exports.up = function(knex, Promise) {
     return knex.schema.createTable(TABLE_CREDENTIALS, table => {
         table.increments(FIELD_ID).primary();
+        table
+            .string(FIELD_USERNAME, LIMIT_USERNAME)
+            .unique()
+            .notNullable();
         table
             .string(FIELD_HASH, LIMIT_HASH)
             .notNullable();
