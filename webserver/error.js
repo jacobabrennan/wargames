@@ -20,7 +20,7 @@ async function errorHandler(error, request, response, next) {
     if (response.headersSent) {
         return next(error)
     }
-    if(!(error && error.message && error.status)) {
+    if (!(error && error.message && error.status)) {
         error = httpError(500, 'Internal Error');
     }
     response.status(error.status).json(
