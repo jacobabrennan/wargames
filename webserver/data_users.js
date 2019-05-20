@@ -17,6 +17,7 @@ Login:
 */
 
 //-- Dependencies --------------------------------
+const bcrypt = require('bcrypt');
 const database = require('./database/index.js');
 
 //-- Project Constants ---------------------------
@@ -26,55 +27,29 @@ const FIELD_ID = 'id';
 const FIELD_USERNAME = 'username';
 const FIELD_HASH = 'hash';
 
-//-- Temp Scaffolding ----------------------------
+
+//== User Database Access ======================================================
+
 const databaseTemp = module.exports = {
-    users: {},
-    async hash(password) {
-        return await bcrypt.hash(password, saltRounds);
-    },
-    checkFormatUsername(username) {
-        return username;
-    },
-    checkFormatPassword(password) {
-        return password;
-    },
-    async checkAvailableUsername(username) {
-        const entry = await database
-            .select(FIELD_ID)
-            .from(TABLE_CREDENTIALS)
-            .where({[FIELD_USERNAME]: username})
-            .first();
-        if (!entry) {
-            return true;
-        }
-    },
-    async storeCredentials(username, password) {
-        userId = (await database
-            .insert(entryData)
-            .into(TABLE_CREDENTIALS)
-        )[0];
-        return userId;
-    },
-    // Register
     async addUser(username, password) {
         // Check if provided username and password are formatted correctly
-        username = this.checkFormatUsername(username);
-        password = this.checkFormatPassword(password);
+        username = checkFormatUsername(username);
+        password = checkFormatPassword(password);
         if (!username || !password) {
             throw Error("Invalid username / password");
         }
         // Check if requested username is available
-        const nameAvailable = await this.checkAvailableUsername(username);
+        const nameAvailable = await checkAvailableUsername(username);
         if (!nameAvailable) {
             throw Error("Username already exists");
         }
         // Store credentials and return user id
-        const userId = await this.storeCredentials(username, password);
+        const userId = await storeCredentials(username, password);
         return userId;
     },
     // Login
     async authenticateUser(username, password) {
-        // Retrieve stored hash
+        // Retrieve stored user data
         await database
             .select(FIELD_HASH, FIELD_ID)
             .from(TABLE_CREDENTIALS)
@@ -86,11 +61,58 @@ const databaseTemp = module.exports = {
         }
         // Compare stored hash to password
         const hashStored = entry[FIELD_HASH];
-        const result = await bcrypt.compare(password, hashStored);
+        const result = await hashCompare(password, hashStored);
         if (!result) {
             return false;
         }
         // Return user id
         return entry[FIELD_ID];
-    },
+    }
 };
+
+
+//== Utilities =================================================================
+
+//-- Format Validators ---------------------------
+function checkFormatUsername(username) {
+    return username;
+}
+function checkFormatPassword(password) {
+    return password;
+}
+
+//-- Hash Handlers -------------------------------
+async function hashGenerate(password) {
+    return await bcrypt.hash(password, saltRounds);
+}
+async function hashCompare(password, hashStored) {
+    return await bcrypt.compare(password, hashStored);
+}
+
+//-- Database utilities --------------------------
+async function checkAvailableUsername(username) {
+    const entry = await database
+        .select(FIELD_ID)
+        .from(TABLE_CREDENTIALS)
+        .where({[FIELD_USERNAME]: username})
+        .first();
+    if (!entry) {
+        return true;
+    }
+}
+async function storeCredentials(username, password) {
+    // Hash Password
+    const passwordHash = await hashGenerate(password);
+    // Package user data to be stored in database
+    const entryData = {
+        [FIELD_USERNAME]: username,
+        [FIELD_HASH]: passwordHash,
+    };
+    // Insert into database
+    userId = (await database
+        .insert(entryData)
+        .into(TABLE_CREDENTIALS)
+    )[0];
+    // Return resultant userId
+    return userId;
+}
