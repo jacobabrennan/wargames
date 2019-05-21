@@ -17,7 +17,7 @@ Login:
 */
 
 //-- Dependencies --------------------------------
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const database = require('./database/index.js');
 
 //-- Project Constants ---------------------------
@@ -31,6 +31,15 @@ const FIELD_HASH = 'hash';
 //== User Database Access ======================================================
 
 const databaseTemp = module.exports = {
+    // Delete User
+    async deleteUser(username) {
+        // WARNING: Currently a utility method, not public facing
+        return await database
+            .from(TABLE_CREDENTIALS)
+            .where({[FIELD_USERNAME]: username})
+            .del();
+    },
+    // Register
     async addUser(username, password) {
         // Check if provided username and password are formatted correctly
         username = checkFormatUsername(username);

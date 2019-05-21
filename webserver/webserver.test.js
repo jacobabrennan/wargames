@@ -3,8 +3,8 @@
 //== Testing: Web Server =======================================================
 
 //-- Dependencies --------------------------------
-const webserver = require('./webserver.js');
 const request = require('supertest');
+const webserver = require('./webserver.js');
 
 
 //== Test Suites ===============================================================
