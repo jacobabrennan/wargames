@@ -59,7 +59,7 @@ const databaseTemp = module.exports = {
     // Login
     async authenticateUser(username, password) {
         // Retrieve stored user data
-        await database
+        const entry = await database
             .select(FIELD_HASH, FIELD_ID)
             .from(TABLE_CREDENTIALS)
             .where({[FIELD_USERNAME]: username})
