@@ -110,9 +110,13 @@ async function authenticate(request, response, next) {
 async function handleRegistration(request, response, next) {
     try {
         // Attempt to register a new user
-        const username   = request.body.username;
-        const password   = request.body.password;
-        const user = await dataUsers.addUser(username, password);
+        const username = request.body.username;
+        const password = request.body.password;
+        const userId = await dataUsers.addUser(username, password);
+        const user = {
+            id: userId,
+            username: username,
+        };
         // Login User and respond with success
         const loginToken = loginUser(user);
         response.status(201).json({
@@ -132,12 +136,16 @@ async function handleLogin(request, response, next) {
         // Check if supplied username and password are valid
         const username = request.body.username;
         const password = request.body.password;
-        const user = await dataUsers.authenticate(username, password);
+        const userId = await dataUsers.authenticateUser(username, password);
         // Handle failed authentication
-        if(!user) {
+        if(!userId) {
             throw errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE);
         }
         // Login User and respond with success
+        const user = {
+            id: userId,
+            username: username,
+        };
         const loginToken = loginUser(user);
         response.status(200).json({
             'message': MESSAGE_AUTHENTICATION_SUCCESS,

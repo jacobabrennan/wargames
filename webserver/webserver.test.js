@@ -5,6 +5,7 @@
 //-- Dependencies --------------------------------
 const request = require('supertest');
 const webserver = require('./webserver.js');
+const dataUsers = require('./data_users.js');
 
 
 //== Test Suites ===============================================================
@@ -40,21 +41,32 @@ Test Login
 */
 
 describe('Test Authentication Module', () => {
+    // Constants and Values
     const urlRegister = '/auth/register';
     const urlLogin = '/auth/login';
     const urlTestGet = '/auth/testget';
-    const credentials = {
-        'username': 'Test',
+    const credentialsRegister = {
+        'username': 'register',
         'password': '12345',
     };
+    const credentialsLogin = {
+        'username': 'login',
+        'password': '67890',
+    };
+    let testHeaders;
+    // Setup & Cleanup
+    beforeAll(async function () {
+        let response = await request(webserver)
+            .post(urlRegister)
+            .send(credentialsLogin);
+        testHeaders = {Authorization: response.body.token};
+    });
+    afterAll(async function () {
+        await dataUsers.deleteUser(credentialsLogin.username);
+        await dataUsers.deleteUser(credentialsRegister.username);
+    });
+    // Tests
     describe('Test Authorization', () => {
-        let testHeaders;
-        beforeAll(async function () {
-            let response = await request(webserver)
-                .post(urlRegister)
-                .send(credentials);
-            testHeaders = {Authorization: response.body.token};
-        });
         test('handles authorized requests', async function () {
             let response = await request(webserver)
                 .get(urlTestGet)
@@ -72,6 +84,9 @@ describe('Test Authentication Module', () => {
         });
     });
     describe('Test Registration', () => {
+        afterAll(async function () {
+            await dataUsers.deleteUser(credentialsRegister.username);
+        });
         test('checks for valid username and password', async function () {
             let response = await request(webserver)
                 .post(urlRegister)
@@ -79,35 +94,23 @@ describe('Test Authentication Module', () => {
             expect(response.status).toBe(401);
         });
         test('enforce unique username', async function () {
-            await request(webserver)
-                .post(urlRegister)
-                .send(credentials);
             let response = await request(webserver)
                 .post(urlRegister)
-                .send(credentials);
+                .send(credentialsLogin);
             expect(response.status).toBe(401);
         });
         test('handles proper request', async function () {
-            const credentialsUnique = {
-                username: 'unique',
-                password: '12345',
-            };
             let response = await request(webserver)
                 .post(urlRegister)
-                .send(credentialsUnique);
+                .send(credentialsRegister);
             expect(response.status).toBe(201);
         });
     });
     describe('Test Login', () => {
-        beforeAll(async function () {
-            await request(webserver)
-                .post(urlLogin)
-                .send(credentials);
-        });
         test('handles proper request', async function () {
             let response = await request(webserver)
                 .post(urlLogin)
-                .send(credentials);
+                .send(credentialsLogin);
             expect(response.status).toBe(200);
             expect(response.body.token).toBeTruthy();
         });
@@ -117,7 +120,7 @@ describe('Test Authentication Module', () => {
                 .post(urlLogin)
                 .send({});
             expect(response.status).toBe(401);
-            Object.assign(badCredentials, credentials);
+            Object.assign(badCredentials, credentialsLogin);
             badCredentials.password = "bad password";
             response = await request(webserver)
                 .post(urlLogin)
