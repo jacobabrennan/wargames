@@ -23,7 +23,12 @@ async function errorHandler(error, request, response, next) {
     if(!(error && error.message && error.status)) {
         error = httpError(500, 'Internal Error');
     }
-    response.status(error.status).json(
-        {'error': error.message}
+    const renderData = {
+        error: error.status,
+        message: error.message,
+    };
+    response.status(error.status).render(
+        'error',
+        renderData,
     );
 }
