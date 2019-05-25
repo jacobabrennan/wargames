@@ -18,6 +18,7 @@ server.set('view engine', 'handlebars');
 
 //-- Middleware ----------------------------------
 server.use(express.json());
+server.use(express.static(path.join(__dirname, 'rsc')));
 
 //-- Work around cache issues in development -----
 // TO DO: Remove this later

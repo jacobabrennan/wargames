@@ -24,6 +24,7 @@ async function errorHandler(error, request, response, next) {
         error = httpError(500, 'Internal Error');
     }
     const renderData = {
+        title: 'whatever',
         error: error.status,
         message: error.message,
     };
