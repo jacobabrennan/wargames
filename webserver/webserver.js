@@ -6,6 +6,7 @@
 require('dotenv').config();
 const express = require('express');
 const exphbs = require('express-handlebars');
+const path = require('path');
 const auth = require('./auth.js');
 const error = require('./error_handler.js');
 
@@ -18,7 +19,6 @@ server.set('view engine', 'handlebars');
 
 //-- Middleware ----------------------------------
 server.use(express.json());
-server.use(express.static(path.join(__dirname, 'rsc')));
 
 //-- Work around cache issues in development -----
 // TO DO: Remove this later
@@ -30,7 +30,8 @@ server.use(function nocache(req, res, next) {
 });
 
 //-- Routing -------------------------------------
-server.use("/auth", auth);
+server.use('/rsc', express.static(path.join(__dirname, 'rsc')));
+server.use('/auth', auth);
 
 //-- Error Handling ------------------------------
 server.use(function (request, response, next) {
