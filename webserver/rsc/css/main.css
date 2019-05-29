@@ -18,3 +18,19 @@ a:any-link {
     color: inherit;
     text-decoration: none;
 }
+
+
+/*== Layout ==================================================================*/
+
+html {
+    background: #888;
+}
+main {
+    background: #fff;
+}
+header {
+    background: blue;
+}
+footer {
+    background: green;
+}
