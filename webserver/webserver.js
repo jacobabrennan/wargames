@@ -8,6 +8,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const auth = require('./auth.js');
+const wrapper = require('./wrapper.js');
 const error = require('./error_handler.js');
 
 //-- Configure Server ----------------------------
@@ -32,6 +33,7 @@ server.use(function nocache(req, res, next) {
 //-- Routing -------------------------------------
 server.use('/rsc', express.static(path.join(__dirname, 'rsc')));
 server.use('/auth', auth);
+server.use('/', wrapper);
 
 //-- Error Handling ------------------------------
 server.use(function (request, response, next) {
