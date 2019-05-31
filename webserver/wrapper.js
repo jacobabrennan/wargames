@@ -28,6 +28,7 @@ web tokens.
 
 //-- Dependencies --------------------------------
 const express = require('express');
+const errorHandler = require('./error_handler.js');
 
 //-- Project Constants ---------------------------
 const URL_WRAPPER_HOME     = '/';
@@ -36,12 +37,42 @@ const URL_WRAPPER_WARGAME  = '/wargame';
 const URL_WRAPPER_REGISTER = '/register';
 const URL_WRAPPER_LOGIN    = '/login';
 const URL_WRAPPER_LOGOUT   = '/logout';
+const MESSAGE_ERROR_INTERNAL = 'Internal Error';
 
-
-//== Router Configuration ======================================================
-
-//-- Export Route Handler ------------------------
+//-- Router Configuration ------------------------
 const router = module.exports = express.Router();
-
-//-- Route Definitions ---------------------------
 router.use(defaultHandler);
+
+
+//== Route Handling ============================================================
+
+//-- Utilities -----------------------------------
+const pathViews = {
+    [URL_WRAPPER_HOME    ]: 'home',
+    [URL_WRAPPER_ABOUT   ]: 'about',
+    [URL_WRAPPER_WARGAME ]: 'wargame',
+    [URL_WRAPPER_REGISTER]: 'register',
+    [URL_WRAPPER_LOGIN   ]: 'login',
+    [URL_WRAPPER_LOGOUT  ]: 'logout',
+}
+
+//-- Default Route Handler -----------------------
+function defaultHandler(request, response, next) {
+    try {
+        // Determine page to be rendered. Bail if none found.
+        let view = pathViews[request.path.toLowerCase()];
+        if (!view) {
+            next();
+            return;
+        }
+        // Construct rendering context
+        const renderingContext = {
+            title: `Social Media Wargames - ${view}`,
+        };
+        // Render Page
+        response.render(view, renderingContext);
+    }
+    catch (error) {
+        next(errorHandler.httpError(500, MESSAGE_ERROR_INTERNAL));
+    }
+}
