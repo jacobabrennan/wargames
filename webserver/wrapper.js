@@ -31,24 +31,16 @@ const express = require('express');
 const errorHandler = require('./error_handler.js');
 
 //-- Project Constants ---------------------------
-const URL_WRAPPER_HOME     = '/';
+const MESSAGE_ERROR_INTERNAL = 'Internal Error';
+const URL_WRAPPER_INDEX    = '/';
 const URL_WRAPPER_ABOUT    = '/about';
 const URL_WRAPPER_WARGAME  = '/wargame';
 const URL_WRAPPER_REGISTER = '/register';
 const URL_WRAPPER_LOGIN    = '/login';
 const URL_WRAPPER_LOGOUT   = '/logout';
-const MESSAGE_ERROR_INTERNAL = 'Internal Error';
-
-//-- Router Configuration ------------------------
-const router = module.exports = express.Router();
-router.use(defaultHandler);
-
-
-//== Route Handling ============================================================
-
-//-- Utilities -----------------------------------
+const VIEW_SPLASH = 'splash';
+const VIEW_STATUS = 'status';
 const pathViews = {
-    [URL_WRAPPER_HOME    ]: 'home',
     [URL_WRAPPER_ABOUT   ]: 'about',
     [URL_WRAPPER_WARGAME ]: 'wargame',
     [URL_WRAPPER_REGISTER]: 'register',
@@ -56,8 +48,31 @@ const pathViews = {
     [URL_WRAPPER_LOGOUT  ]: 'logout',
 }
 
+//-- Router Configuration ------------------------
+const router = module.exports = express.Router();
+router.use(handleDefault);
+router.get(URL_WRAPPER_INDEX, handleIndex);
+
+
+//== Route Handling ============================================================
+
+//-- Handle Splash and Status (index) ------------
+function handleIndex(request, response, next) {
+    try {
+        // Determine if user is logged in
+        
+        //
+        response.render(VIEW_SPLASH, {
+            title: 'Social Media Wargames',
+        });
+    }
+    catch (error) {
+        next(errorHandler.httpError(500, MESSAGE_ERROR_INTERNAL));
+    }
+}
+
 //-- Default Route Handler -----------------------
-function defaultHandler(request, response, next) {
+function handleDefault(request, response, next) {
     try {
         // Determine page to be rendered. Bail if none found.
         let view = pathViews[request.path.toLowerCase()];
