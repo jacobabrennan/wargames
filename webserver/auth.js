@@ -112,6 +112,8 @@ async function handleRegistration(request, response, next) {
         // Attempt to register a new user
         const username = request.body.username;
         const password = request.body.password;
+        console.log(username)
+        console.log(request.body)
         const userId = await dataUsers.addUser(username, password);
         const user = {
             id: userId,
@@ -126,7 +128,7 @@ async function handleRegistration(request, response, next) {
         // Move to next middleware
         next();
     } catch(error) {
-        next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
+        next(errorHandler.httpError(401, error));//MESSAGE_AUTHENTICATION_FAILURE));
     }
 }
 
