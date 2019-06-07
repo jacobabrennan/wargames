@@ -53,6 +53,13 @@ router.post(URL_AUTHENTICATION_REGISTER, handleRegistration);
 router.post(URL_AUTHENTICATION_LOGIN   , handleLogin       );
 router.get (URL_AUTHENTICATION_TEST, authenticate, handleTest);
 
+//-- Error Handling ------------------------------
+// Custom error handler is used, as response must be JSON, not HTML.
+router.use(function(error, request, response, next) {
+    // console.log(error)
+    response.status(error.status).send(error);
+});
+
 
 //== Utility Functions =========================================================
 
@@ -112,8 +119,6 @@ async function handleRegistration(request, response, next) {
         // Attempt to register a new user
         const username = request.body.username;
         const password = request.body.password;
-        console.log(username)
-        console.log(request.body)
         const userId = await dataUsers.addUser(username, password);
         const user = {
             id: userId,
@@ -128,7 +133,7 @@ async function handleRegistration(request, response, next) {
         // Move to next middleware
         next();
     } catch(error) {
-        next(errorHandler.httpError(401, error));//MESSAGE_AUTHENTICATION_FAILURE));
+        next(errorHandler.httpError(401, error.message));
     }
 }
 

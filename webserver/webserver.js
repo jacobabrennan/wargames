@@ -19,8 +19,8 @@ server.engine('handlebars', exphbs({defaultLayout: 'theme'}));
 server.set('view engine', 'handlebars');
 
 //-- Middleware ----------------------------------
-// server.use(express.json());
-server.use(express.urlencoded());
+server.use(express.json());
+// server.use(express.urlencoded());
 
 //-- Work around cache issues in development -----
 // TO DO: Remove this later
