@@ -7,6 +7,7 @@ require('dotenv').config();
 const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const auth = require('./auth.js');
 const wrapper = require('./wrapper.js');
 const error = require('./error_handler.js');
@@ -21,6 +22,7 @@ server.set('view engine', 'handlebars');
 //-- Middleware ----------------------------------
 server.use(express.json());
 // server.use(express.urlencoded());
+server.use(cookieParser());
 
 //-- Work around cache issues in development -----
 // TO DO: Remove this later

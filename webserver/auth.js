@@ -64,7 +64,7 @@ router.use(function(error, request, response, next) {
 //== Utility Functions =========================================================
 
 //-- Login ---------------------------------------
-function loginUser(user) {
+function loginUser(response, user) {
     // Compile User data
     const tokenData = {
         id      : user.id,
@@ -74,15 +74,25 @@ function loginUser(user) {
     const options = {
         expiresIn: TIME_TOKEN_EXPIRATION,
     };
-    // Return generated token
-    return jsonWebToken.sign(tokenData, JSONWEBTOKEN_SECRET, options);
+    // Generated token
+    const loginToken = jsonWebToken.sign(
+        tokenData, JSONWEBTOKEN_SECRET, options,
+    );
+    // Store token in cookie
+    response.cookie('auth', loginToken, {
+        // expires: Expiry date of the cookie in GMT. If not specified or set to 0, creates a session cookie.
+        // maxAge: Convenient option for setting the expiry time relative to the current time in milliseconds.
+        httpOnly: true, // cannot be accessed by client scripts
+        // secure: true, // https
+    });
 }
 
 //-- Authentication Middleware -------------------
 async function authenticate(request, response, next) {
     try {
-        // Fail if no token provided
-        const token = request.headers.authorization;
+        // Fail if no token present
+        const token = request.cookies.auth;
+        // const token = request.headers.authorization;
         if(!token){
             throw errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE);
         }
@@ -124,11 +134,11 @@ async function handleRegistration(request, response, next) {
             id: userId,
             username: username,
         };
-        // Login User and respond with success
-        const loginToken = loginUser(user);
+        // Login User
+        loginUser(response, user);
+        // Respond with success
         response.status(201).json({
-            'message': MESSAGE_AUTHENTICATION_SUCCESS,
-            'token': loginToken,
+            'message': MESSAGE_AUTHENTICATION_SUCCESS
         });
         // Move to next middleware
         next();
@@ -153,10 +163,9 @@ async function handleLogin(request, response, next) {
             id: userId,
             username: username,
         };
-        const loginToken = loginUser(user);
+        loginUser(response, user);
         response.status(200).json({
             'message': MESSAGE_AUTHENTICATION_SUCCESS,
-            'token': loginToken,
         });
         // Move to next middleware
         next();
