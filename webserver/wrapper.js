@@ -35,7 +35,6 @@ const MESSAGE_ERROR_INTERNAL = 'Internal Error';
 const URL_WRAPPER_INDEX    = '/';
 const URL_WRAPPER_ABOUT    = '/about';
 const URL_WRAPPER_WARGAME  = '/wargame';
-const URL_WRAPPER_REGISTER = '/register';
 const URL_WRAPPER_LOGIN    = '/login';
 const URL_WRAPPER_LOGOUT   = '/logout';
 const VIEW_SPLASH = 'splash';
@@ -43,7 +42,6 @@ const VIEW_STATUS = 'status';
 const pathViews = {
     [URL_WRAPPER_ABOUT   ]: 'about',
     [URL_WRAPPER_WARGAME ]: 'wargame',
-    [URL_WRAPPER_REGISTER]: 'register',
     [URL_WRAPPER_LOGIN   ]: 'login',
     [URL_WRAPPER_LOGOUT  ]: 'logout',
 }

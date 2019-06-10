@@ -49,16 +49,10 @@ const router = module.exports = express.Router();
 router.authenticate = authenticate;
 
 //-- Route Definitions ---------------------------
+router.get (URL_AUTHENTICATION_REGISTER, handleGetRegister);
 router.post(URL_AUTHENTICATION_REGISTER, handleRegistration);
 router.post(URL_AUTHENTICATION_LOGIN   , handleLogin       );
 router.get (URL_AUTHENTICATION_TEST, authenticate, handleTest);
-
-//-- Error Handling ------------------------------
-// Custom error handler is used, as response must be JSON, not HTML.
-router.use(function(error, request, response, next) {
-    // console.log(error)
-    response.status(error.status).send(error);
-});
 
 
 //== Utility Functions =========================================================
@@ -136,8 +130,9 @@ async function handleRegistration(request, response, next) {
         };
         // Login User
         loginUser(response, user);
-        // Respond with success
-        response.status(201).json({
+        // Respond with success, and redirect to home page
+        response.location('/');
+        response.status(301).json({
             'message': MESSAGE_AUTHENTICATION_SUCCESS
         });
         // Move to next middleware
@@ -172,6 +167,18 @@ async function handleLogin(request, response, next) {
     } catch(error) {
         next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
     }
+}
+
+//-- Get Registration Page -----------------------
+async function handleGetRegister(request, response, next) {
+    // Determine view
+    let view = 'register';
+    // Construct rendering context
+    const renderingContext = {
+        title: `Social Media Wargames - Register`,
+    };
+    // Render Page
+    response.render(view, renderingContext);
 }
 
 //-- Automated Testing of Authorized Get ---------
