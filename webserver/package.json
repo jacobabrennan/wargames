@@ -4,18 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "knex": "knex"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1"
+    "express-handlebars": "^3.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.17.0"
   },
   "devDependencies": {
     "jest": "^24.8.0",
+    "sqlite3": "^4.0.8",
     "supertest": "^4.0.2"
   }
 }
