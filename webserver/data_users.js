@@ -26,11 +26,15 @@ const TABLE_CREDENTIALS = 'credentials';
 const FIELD_ID = 'id';
 const FIELD_USERNAME = 'username';
 const FIELD_HASH = 'hash';
-
+const ERROR_NAME_CONFLICT = "Username already exists";
+const ERROR_INVALID_PARAMS = "Invalid username / password";
 
 //== User Database Access ======================================================
 
 const databaseTemp = module.exports = {
+    // "exported" values for use outside module
+    ERROR_NAME_CONFLICT: ERROR_NAME_CONFLICT,
+    ERROR_INVALID_PARAMS: ERROR_INVALID_PARAMS,
     // Delete User
     async deleteUser(username) {
         // WARNING: Currently a utility method, not public facing
@@ -45,12 +49,12 @@ const databaseTemp = module.exports = {
         username = checkFormatUsername(username);
         password = checkFormatPassword(password);
         if (!username || !password) {
-            throw Error("Invalid username / password");
+            throw Error(this.ERROR_INVALID_PARAMS);
         }
         // Check if requested username is available
         const nameAvailable = await checkAvailableUsername(username);
         if (!nameAvailable) {
-            throw Error("Username already exists");
+            throw Error(this.ERROR_NAME_CONFLICT);
         }
         // Store credentials and return user id
         const userId = await storeCredentials(username, password);

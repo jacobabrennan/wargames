@@ -38,7 +38,6 @@ const URL_AUTHENTICATION_REGISTER = '/register';
 const URL_AUTHENTICATION_LOGIN    = '/login';
 const URL_AUTHENTICATION_TEST     = '/testget';
 const TIME_TOKEN_EXPIRATION = '1m';
-const MESSAGE_AUTHENTICATION_SUCCESS = 'Login Successful';
 const MESSAGE_AUTHENTICATION_FAILURE = 'Unauthorized Access';
 
 
@@ -49,15 +48,17 @@ const router = module.exports = express.Router();
 router.authenticate = authenticate;
 
 //-- Route Definitions ---------------------------
+router.get(URL_AUTHENTICATION_REGISTER, getRegister);
+router.get(URL_AUTHENTICATION_LOGIN   , getLogin   );
+router.get (URL_AUTHENTICATION_TEST, authenticate, getTest);
 router.post(URL_AUTHENTICATION_REGISTER, handleRegistration);
 router.post(URL_AUTHENTICATION_LOGIN   , handleLogin       );
-router.get (URL_AUTHENTICATION_TEST, authenticate, handleTest);
 
 
 //== Utility Functions =========================================================
 
 //-- Login ---------------------------------------
-function loginUser(user) {
+function loginUser(response, user) {
     // Compile User data
     const tokenData = {
         id      : user.id,
@@ -67,41 +68,58 @@ function loginUser(user) {
     const options = {
         expiresIn: TIME_TOKEN_EXPIRATION,
     };
-    // Return generated token
-    return jsonWebToken.sign(tokenData, JSONWEBTOKEN_SECRET, options);
+    // Generated token
+    const loginToken = jsonWebToken.sign(
+        tokenData, JSONWEBTOKEN_SECRET, options,
+    );
+    // Store token in cookie
+    response.cookie('auth', loginToken, {
+        // expires: Expiry date of the cookie in GMT. If not specified or set to 0, creates a session cookie.
+        // maxAge: Convenient option for setting the expiry time relative to the current time in milliseconds.
+        httpOnly: true, // cannot be accessed by client scripts
+        // secure: true, // https
+    });
+}
+
+//-- Authentication Checker ----------------------
+async function checkLogin(request) {
+    // Fail if no token present
+    const token = request.cookies.auth;
+    if (!token) {
+        return false;
+    }
+    // Setup Callback on Promise
+    let validationCallback;
+    const validationPromise = new Promise(function (resolve, reject) {
+        validationCallback = function (error, result) {
+            if(error) { reject(error);}
+            resolve(result);
+        }
+    });
+    // Fail if token not valid
+    jsonWebToken.verify(
+        token,
+        JSONWEBTOKEN_SECRET,
+        validationCallback,
+    );
+    try {
+        await validationPromise;
+    } catch(error) {
+        return false;
+    }
+    // User is logged in
+    return true;
 }
 
 //-- Authentication Middleware -------------------
 async function authenticate(request, response, next) {
-    try {
-        // Fail if no token provided
-        const token = request.headers.authorization;
-        if(!token){
-            throw errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE);
-        }
-        // Setup Callback on Promise
-        let validationCallback;
-        const validationPromise = new Promise(function (resolve, reject) {
-            validationCallback = function (error, result) {
-                if(error) { reject(error);}
-                resolve(result);
-            }
-        });
-        // Fail if token not valid
-        jsonWebToken.verify(
-            token,
-            JSONWEBTOKEN_SECRET,
-            validationCallback,
-        );
-        let decodedToken = await validationPromise;
-        // Set token on request
-        request.token = decodedToken;
-        // Move to next middleware
+    // Check if user is logged in
+    if (checkLogin(request)) {
         next();
-    } catch(error) {
+    } else {
         next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
     }
-};
+}
 
 
 //== Route Handlers ============================================================
@@ -117,16 +135,15 @@ async function handleRegistration(request, response, next) {
             id: userId,
             username: username,
         };
-        // Login User and respond with success
-        const loginToken = loginUser(user);
-        response.status(201).json({
-            'message': MESSAGE_AUTHENTICATION_SUCCESS,
-            'token': loginToken,
-        });
+        // Login User
+        loginUser(response, user);
+        // Respond with success, and redirect to home page
+        response.location('/');
+        response.status(303).end();
         // Move to next middleware
         next();
     } catch(error) {
-        next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
+        next(errorHandler.httpError(401, error.message));
     }
 }
 
@@ -146,11 +163,9 @@ async function handleLogin(request, response, next) {
             id: userId,
             username: username,
         };
-        const loginToken = loginUser(user);
-        response.status(200).json({
-            'message': MESSAGE_AUTHENTICATION_SUCCESS,
-            'token': loginToken,
-        });
+        loginUser(response, user);
+        response.location('/');
+        response.status(303).end();
         // Move to next middleware
         next();
     } catch(error) {
@@ -158,8 +173,44 @@ async function handleLogin(request, response, next) {
     }
 }
 
+//-- Get Registration Page -----------------------
+async function getRegister(request, response, next) {
+    // Redirect if already logged in
+    if (checkLogin(request)) {
+        response.location('/');
+        response.status(303).end();
+        return;
+    }
+    // Determine view
+    let view = 'register';
+    // Construct rendering context
+    const renderingContext = {
+        title: `Social Media Wargames - Register`,
+    };
+    // Render Page
+    response.render(view, renderingContext);
+}
+
+//-- Get Login Page ------------------------------
+async function getLogin(request, response, next) {
+    // Redirect if already logged in
+    if (checkLogin(request)) {
+        response.location('/');
+        response.status(303).end();
+        return;
+    }
+    // Determine view
+    let view = 'login';
+    // Construct rendering context
+    const renderingContext = {
+        title: `Social Media Wargames - Login`,
+    };
+    // Render Page
+    response.render(view, renderingContext);
+}
+
 //-- Automated Testing of Authorized Get ---------
-async function handleTest(request, response, next) {
+async function getTest(request, response, next) {
     response.status(200).json({
         'message': 'test complete',
     });
