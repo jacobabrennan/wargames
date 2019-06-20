@@ -18,7 +18,7 @@ Login:
 
 //-- Dependencies --------------------------------
 const bcrypt = require('bcryptjs');
-const database = require('./database/index.js');
+const database = require('../database/index.js');
 
 //-- Project Constants ---------------------------
 const saltRounds = 10;

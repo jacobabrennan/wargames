@@ -19,8 +19,13 @@
             <h1 class="wordmark">Social Media Wargames</h1>
         </a>
         <nav>
-            <a href="/about">About</a>
-            <a href="/wargame">Current Game</a>
+        {{#if auth}}
+            <a href="/logout">Logout</a>
+        {{/if}}
+        {{#unless auth}}
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        {{/unless}}
         </nav>
     </header>
     {{{body}}}
