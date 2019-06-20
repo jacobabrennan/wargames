@@ -29,16 +29,24 @@ web tokens.
 //-- Dependencies --------------------------------
 const express      = require('express');
 const jsonWebToken = require('jsonwebtoken');
-const errorHandler = require('./error_handler.js');
+const errorHandler = require('../error_handler.js');
 const dataUsers    = require('./data_users.js');
 
 //-- Project Constants ---------------------------
 const JSONWEBTOKEN_SECRET = process.env.JSONWEBTOKEN_SECRET;
 const URL_AUTHENTICATION_REGISTER = '/register';
 const URL_AUTHENTICATION_LOGIN    = '/login';
+const URL_AUTHENTICATION_LOGOUT   = '/logout';
 const URL_AUTHENTICATION_TEST     = '/testget';
 const TIME_TOKEN_EXPIRATION = '1m';
 const MESSAGE_AUTHENTICATION_FAILURE = 'Unauthorized Access';
+const COOKIE_NAME = 'auth';
+const COOKIE_OPTIONS = {
+    // expires: Expiry date of the cookie in GMT. If not specified or set to 0, creates a session cookie.
+    // maxAge: Convenient option for setting the expiry time relative to the current time in milliseconds.
+    httpOnly: true, // cannot be accessed by client scripts
+    // secure: true, // https
+};
 
 
 //== Router Configuration ======================================================
@@ -46,12 +54,12 @@ const MESSAGE_AUTHENTICATION_FAILURE = 'Unauthorized Access';
 //-- Export Route Handler ------------------------
 const router = module.exports = express.Router();
 router.protect = protect;
-router.authenticate = authenticate;
 
 //-- Route Definitions ---------------------------
 router.use(authenticate);
 router.get(URL_AUTHENTICATION_REGISTER, getRegister);
 router.get(URL_AUTHENTICATION_LOGIN   , getLogin   );
+router.get(URL_AUTHENTICATION_LOGOUT  , getLogout  );
 router.get(URL_AUTHENTICATION_TEST, protect, getTest);
 router.post(URL_AUTHENTICATION_REGISTER, handleRegistration);
 router.post(URL_AUTHENTICATION_LOGIN   , handleLogin       );
@@ -153,6 +161,15 @@ async function getLogin(request, response, next) {
     response.render(view, renderingContext);
 }
 
+//-- Get Logout Page -----------------------------
+async function getLogout(request, response, next) {
+    // Logout user
+    logoutUser(response);
+    // Redirect
+    response.location('/');
+    response.status(303).end();
+}
+
 //-- Automated Testing of Authorized Get ---------
 async function getTest(request, response, next) {
     response.status(200).json({
@@ -179,12 +196,12 @@ function loginUser(response, user) {
         tokenData, JSONWEBTOKEN_SECRET, options,
     );
     // Store token in cookie
-    response.cookie('auth', loginToken, {
-        // expires: Expiry date of the cookie in GMT. If not specified or set to 0, creates a session cookie.
-        // maxAge: Convenient option for setting the expiry time relative to the current time in milliseconds.
-        httpOnly: true, // cannot be accessed by client scripts
-        // secure: true, // https
-    });
+    response.cookie(COOKIE_NAME, loginToken, COOKIE_OPTIONS);
+}
+
+//-- Logout --------------------------------------
+function logoutUser(response) {
+    response.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
 }
 
 //-- Authentication Middleware -------------------
@@ -216,7 +233,9 @@ async function authenticate(request, response, next) {
         return next();
     }
     // Set login status on user
-    request.auth = true;
-    console.log(tokenData)
+    request.auth = {
+        id: tokenData.id,
+        username: tokenData.username,
+    };
     return next();
 }

@@ -27,6 +27,7 @@ async function errorHandler(error, request, response, next) {
         title: `Error ${error.status}`,
         error: error.status,
         message: error.message,
+        auth: request.auth,
     };
     response.status(error.status).render(
         'error',

@@ -62,6 +62,7 @@ function handleIndex(request, response, next) {
         //
         response.render(VIEW_SPLASH, {
             title: 'Social Media Wargames',
+            auth: request.auth,
         });
     }
     catch (error) {
@@ -81,6 +82,7 @@ function handleDefault(request, response, next) {
         // Construct rendering context
         const renderingContext = {
             title: `Social Media Wargames - ${view}`,
+            auth: request.auth,
         };
         // Render Page
         response.render(view, renderingContext);

@@ -8,7 +8,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const auth = require('./auth.js');
+const auth = require('./server_auth/index.js');
 const wrapper = require('./wrapper.js');
 const error = require('./error_handler.js');
 
