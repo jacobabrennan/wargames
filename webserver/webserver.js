@@ -23,6 +23,7 @@ server.set('view engine', 'handlebars');
 // server.use(express.json());
 server.use(express.urlencoded());
 server.use(cookieParser());
+server.use(auth);
 
 //-- Work around cache issues in development -----
 // TO DO: Remove this later
@@ -35,7 +36,6 @@ server.use(function nocache(req, res, next) {
 
 //-- Routing -------------------------------------
 server.use('/rsc', express.static(path.join(__dirname, 'rsc')));
-server.use('/auth', auth);
 server.use('/', wrapper);
 
 //-- Error Handling ------------------------------

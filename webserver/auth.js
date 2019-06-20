@@ -45,76 +45,24 @@ const MESSAGE_AUTHENTICATION_FAILURE = 'Unauthorized Access';
 
 //-- Export Route Handler ------------------------
 const router = module.exports = express.Router();
+router.protect = protect;
 router.authenticate = authenticate;
 
 //-- Route Definitions ---------------------------
+router.use(authenticate);
 router.get(URL_AUTHENTICATION_REGISTER, getRegister);
 router.get(URL_AUTHENTICATION_LOGIN   , getLogin   );
-router.get (URL_AUTHENTICATION_TEST, authenticate, getTest);
+router.get(URL_AUTHENTICATION_TEST, protect, getTest);
 router.post(URL_AUTHENTICATION_REGISTER, handleRegistration);
 router.post(URL_AUTHENTICATION_LOGIN   , handleLogin       );
 
 
-//== Utility Functions =========================================================
+//== Middleware for Export =====================================================
 
-//-- Login ---------------------------------------
-function loginUser(response, user) {
-    // Compile User data
-    const tokenData = {
-        id      : user.id,
-        username: user.username,
-    };
-    // Compile Token Options
-    const options = {
-        expiresIn: TIME_TOKEN_EXPIRATION,
-    };
-    // Generated token
-    const loginToken = jsonWebToken.sign(
-        tokenData, JSONWEBTOKEN_SECRET, options,
-    );
-    // Store token in cookie
-    response.cookie('auth', loginToken, {
-        // expires: Expiry date of the cookie in GMT. If not specified or set to 0, creates a session cookie.
-        // maxAge: Convenient option for setting the expiry time relative to the current time in milliseconds.
-        httpOnly: true, // cannot be accessed by client scripts
-        // secure: true, // https
-    });
-}
-
-//-- Authentication Checker ----------------------
-async function checkLogin(request) {
-    // Fail if no token present
-    const token = request.cookies.auth;
-    if (!token) {
-        return false;
-    }
-    // Setup Callback on Promise
-    let validationCallback;
-    const validationPromise = new Promise(function (resolve, reject) {
-        validationCallback = function (error, result) {
-            if(error) { reject(error);}
-            resolve(result);
-        }
-    });
-    // Fail if token not valid
-    jsonWebToken.verify(
-        token,
-        JSONWEBTOKEN_SECRET,
-        validationCallback,
-    );
-    try {
-        await validationPromise;
-    } catch(error) {
-        return false;
-    }
-    // User is logged in
-    return true;
-}
-
-//-- Authentication Middleware -------------------
-async function authenticate(request, response, next) {
+//-- Route Protection ----------------------------
+async function protect(request, response, next) {
     // Check if user is logged in
-    if (checkLogin(request)) {
+    if (request.auth) {
         next();
     } else {
         next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
@@ -140,8 +88,6 @@ async function handleRegistration(request, response, next) {
         // Respond with success, and redirect to home page
         response.location('/');
         response.status(303).end();
-        // Move to next middleware
-        next();
     } catch(error) {
         next(errorHandler.httpError(401, error.message));
     }
@@ -155,7 +101,7 @@ async function handleLogin(request, response, next) {
         const password = request.body.password;
         const userId = await dataUsers.authenticateUser(username, password);
         // Handle failed authentication
-        if(!userId) {
+        if (!userId) {
             throw errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE);
         }
         // Login User and respond with success
@@ -166,8 +112,6 @@ async function handleLogin(request, response, next) {
         loginUser(response, user);
         response.location('/');
         response.status(303).end();
-        // Move to next middleware
-        next();
     } catch(error) {
         next(errorHandler.httpError(401, MESSAGE_AUTHENTICATION_FAILURE));
     }
@@ -176,7 +120,7 @@ async function handleLogin(request, response, next) {
 //-- Get Registration Page -----------------------
 async function getRegister(request, response, next) {
     // Redirect if already logged in
-    if (checkLogin(request)) {
+    if (request.auth) {
         response.location('/');
         response.status(303).end();
         return;
@@ -194,7 +138,7 @@ async function getRegister(request, response, next) {
 //-- Get Login Page ------------------------------
 async function getLogin(request, response, next) {
     // Redirect if already logged in
-    if (checkLogin(request)) {
+    if (request.auth) {
         response.location('/');
         response.status(303).end();
         return;
@@ -214,5 +158,65 @@ async function getTest(request, response, next) {
     response.status(200).json({
         'message': 'test complete',
     });
-    next();
+}
+
+
+//== Utilities =================================================================
+
+//-- Login ---------------------------------------
+function loginUser(response, user) {
+    // Compile User data
+    const tokenData = {
+        id      : user.id,
+        username: user.username,
+    };
+    // Compile Token Options
+    const options = {
+        expiresIn: TIME_TOKEN_EXPIRATION,
+    };
+    // Generated token
+    const loginToken = jsonWebToken.sign(
+        tokenData, JSONWEBTOKEN_SECRET, options,
+    );
+    // Store token in cookie
+    response.cookie('auth', loginToken, {
+        // expires: Expiry date of the cookie in GMT. If not specified or set to 0, creates a session cookie.
+        // maxAge: Convenient option for setting the expiry time relative to the current time in milliseconds.
+        httpOnly: true, // cannot be accessed by client scripts
+        // secure: true, // https
+    });
+}
+
+//-- Authentication Middleware -------------------
+async function authenticate(request, response, next) {
+    request.auth = false;
+    // Fail if no token present
+    const token = request.cookies.auth;
+    if (!token) {
+        return next();
+    }
+    // Setup Callback on Promise
+    let validationCallback;
+    const validationPromise = new Promise(function (resolve, reject) {
+        validationCallback = function (error, result) {
+            if (error) { reject(error);}
+            resolve(result);
+        }
+    });
+    // Fail if token not valid
+    jsonWebToken.verify(
+        token,
+        JSONWEBTOKEN_SECRET,
+        validationCallback,
+    );
+    let tokenData;
+    try {
+        tokenData = await validationPromise;
+    } catch(error) {
+        return next();
+    }
+    // Set login status on user
+    request.auth = true;
+    console.log(tokenData)
+    return next();
 }
