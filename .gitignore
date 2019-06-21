@@ -5,6 +5,7 @@
 .vscode/
 plan.txt
 node_modules/
+*.sqlite3
 
 
 #== Common Directives for Node ================================================= 
