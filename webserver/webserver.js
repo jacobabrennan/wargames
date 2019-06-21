@@ -21,7 +21,7 @@ server.set('view engine', 'handlebars');
 
 //-- Middleware ----------------------------------
 // server.use(express.json());
-server.use(express.urlencoded());
+server.use(express.urlencoded({ extended: false }));
 server.use(cookieParser());
 server.use(auth);
 

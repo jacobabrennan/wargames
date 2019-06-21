@@ -180,6 +180,11 @@ async function getTest(request, response, next) {
 
 //== Utilities =================================================================
 
+//-- Delete User (for running tests) -------------
+router.deleteUser = async function(username) {
+    return await dataUsers.deleteUser(username);
+}
+
 //-- Login ---------------------------------------
 function loginUser(response, user) {
     // Compile User data
