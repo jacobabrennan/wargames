@@ -1,9 +1,13 @@
 <div>
   {{#if auth}}
+  <div class="splash">
     <div>Welcome Home!</div>
     <div>You are logged in!</div>
+  </div>
   {{/if}}
   {{#unless auth}}
-    <div>Login or signup!</div>
+    <div class="splash">
+      <div>Login or Signup!</div>
+    </div>
   {{/unless}}
 </div>
