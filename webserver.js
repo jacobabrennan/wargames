@@ -1,6 +1,17 @@
 
 
-//== War Games Web Server ======================================================
+/*== War Games Web Server ======================================================
+
+This module defines the Social Media Wargames webserver, including functionality
+for both "front end" (file serving) and "back end". It fully defines the outter
+wrapper website, as well as hosting individual wargames defined elsewhere.
+
+It exports a single Express server instance, which can be used as in any other
+Express app:
+
+server.listen(port);
+
+*/
 
 //-- Dependencies --------------------------------
 require('dotenv').config();
@@ -20,7 +31,6 @@ server.engine('handlebars', exphbs({defaultLayout: 'theme'}));
 server.set('view engine', 'handlebars');
 
 //-- Middleware ----------------------------------
-// server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 server.use(cookieParser());
 server.use(auth);
