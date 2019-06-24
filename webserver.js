@@ -39,7 +39,4 @@ server.use('/rsc', express.static(path.join(__dirname, 'rsc')));
 server.use('/', wrapper);
 
 //-- Error Handling ------------------------------
-server.use(function (request, response, next) {
-    next(error.httpError(404, 'Resource not found'));
-});
-server.use(error.handler);
+error(server);
