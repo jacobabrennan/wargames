@@ -1,1 +1,9 @@
-Home
+<div>
+  {{#if auth}}
+    <div>Welcome Home!</div>
+    <div>You are logged in!</div>
+  {{/if}}
+  {{#unless auth}}
+    <div>Login or signup!</div>
+  {{/unless}}
+</div>
