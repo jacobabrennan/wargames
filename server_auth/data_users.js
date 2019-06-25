@@ -2,17 +2,20 @@
 
 /*== Database Access, User Credentials =========================================
 
-Register:
-    Is Username Formatted Correctly?
-    Is Password Formatted Correctly?
-    Is Username available?
-    Store Username and Password
-    Return ID
-
-Login:
-    Retrieve Password associated with Username
-    Does provided password match retrieved password?
-    Return ID
+This file provides the data access layer for the server_auth middleware. It
+exports an object with the following attributes and methods:
+    ERROR_NAME_CONFLICT,
+    ERROR_INVALID_PARAMS: error messages, for handling thrown errors.
+    deleteUser(username): deletes the given username from the database. This
+        is currently for internal use only, but should eventually be exposed
+        through an API.
+    addUser(username, password): adds a new user to the database with the given
+        credentials, and returns the new user's userId. Will throw
+        ERROR_NAME_CONFLICT is a user with that name already exists. Will throw
+        ERROR_INVALID_PARAMS is the given username or password are invalid.
+    authenticateUser(username, password): checks if the given credentials match
+        any users in the database. Will return the user's userId if they do, and
+        false otherwise.
 
 */
 
@@ -31,7 +34,7 @@ const ERROR_INVALID_PARAMS = "Invalid username / password";
 
 //== User Database Access ======================================================
 
-const databaseTemp = module.exports = {
+module.exports = {
     // "exported" values for use outside module
     ERROR_NAME_CONFLICT: ERROR_NAME_CONFLICT,
     ERROR_INVALID_PARAMS: ERROR_INVALID_PARAMS,
