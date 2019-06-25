@@ -5,6 +5,7 @@
 .vscode/
 plan.txt
 node_modules/
+current/
 *.sqlite3
 
 

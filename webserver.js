@@ -33,6 +33,15 @@ expressWs(server);
 server.engine('handlebars', exphbs({defaultLayout: 'theme'}));
 server.set('view engine', 'handlebars');
 
+//-- Load Current Game ---------------------------
+let currentGame;
+try {
+    currentGame = require('./current/index.js');
+} catch (error) {
+    console.log('Failed to load current game.')
+    throw error
+}
+
 //-- Middleware ----------------------------------
 server.use(express.urlencoded({ extended: false }));
 server.use(cookieParser());
@@ -40,15 +49,18 @@ server.use(auth);
 
 //-- Work around cache issues in development -----
 // TO DO: Remove this later
-server.use(function nocache(req, res, next) {
-    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-    res.header('Expires', '-1');
-    res.header('Pragma', 'no-cache');
+server.use(function nocache(request, response, next) {
+    response.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    response.header('Expires', '-1');
+    response.header('Pragma', 'no-cache');
     next();
 });
 
 //-- Routing -------------------------------------
 server.use('/rsc', express.static(path.join(__dirname, 'rsc')));
+if (currentGame) {
+    server.use('/current', currentGame);
+}
 server.use('/', wrapper);
 
 //-- Error Handling ------------------------------
