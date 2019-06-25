@@ -19,6 +19,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const expressWs = require('express-ws');
 const auth = require('./server_auth/index.js');
 const wrapper = require('./wrapper.js');
 const error = require('./error_handler.js');
@@ -26,6 +27,8 @@ const error = require('./error_handler.js');
 //-- Configure Server ----------------------------
 // Create server
 const server = module.exports = express();
+// Enable Websockets (for wargames that use them)
+expressWs(server);
 // Configure templating engine
 server.engine('handlebars', exphbs({defaultLayout: 'theme'}));
 server.set('view engine', 'handlebars');
