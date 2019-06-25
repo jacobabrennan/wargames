@@ -1,93 +1,61 @@
 
 
-/*== Authentication Route Handler ==============================================
+/*== Wrapper Route Handler =====================================================
 
-Exports an Express router which handles user registration and login. The
-following endpoints are provided:
-
-POST /register
-POST /login
-GET /testget
-
-The GET endpoint is provided to test authentication via automated testing.
-For both POST endpoints, data must be supplied in the body of the request, in
-the following format:
-{
-    "username": "some name string",
-    "password": "secret password"
-}
-
-An authentication middleware is also provided via module.exports.authenticate.
-This middleware will invoke the next middleware when a user is logged in, and
-will throw an error (block access) otherwise.
-
-Note: Logout function not provided, and not strictly possible with stateless
-web tokens.
+Exports an Express router which handles the homepage and marketing pages for the
+outter wrapper website. It handles get requests for the about and splash pages
+by rendering simple templates; for logged in users, it replaces the splash page
+with a status page, displaying the status of any currently running wargame. It
+also provides a link to a currently running wargame.
 
 */
 
 //-- Dependencies --------------------------------
 const express = require('express');
-const errorHandler = require('./error_handler.js');
 
 //-- Project Constants ---------------------------
-const MESSAGE_ERROR_INTERNAL = 'Internal Error';
 const URL_WRAPPER_INDEX    = '/';
 const URL_WRAPPER_ABOUT    = '/about';
 const URL_WRAPPER_WARGAME  = '/wargame';
-const URL_WRAPPER_LOGIN    = '/login';
-const URL_WRAPPER_LOGOUT   = '/logout';
 const VIEW_SPLASH = 'splash';
 const VIEW_STATUS = 'status';
-const pathViews = {
-    [URL_WRAPPER_ABOUT   ]: 'about',
-    [URL_WRAPPER_WARGAME ]: 'wargame',
-    [URL_WRAPPER_LOGIN   ]: 'login',
-    [URL_WRAPPER_LOGOUT  ]: 'logout',
-}
+const VIEW_ABOUT = 'about';
+const VIEW_WARGAME = 'wargame';
 
 //-- Router Configuration ------------------------
 const router = module.exports = express.Router();
-router.use(handleDefault);
-router.get(URL_WRAPPER_INDEX, handleIndex);
+router.get(URL_WRAPPER_INDEX  , handleIndex  );
+router.get(URL_WRAPPER_ABOUT  , handleAbout  );
+router.get(URL_WRAPPER_WARGAME, handleWargame);
 
 
 //== Route Handling ============================================================
 
 //-- Handle Splash and Status (index) ------------
 function handleIndex(request, response, next) {
-    try {
-        // Determine if user is logged in
-        
-        //
-        response.render(VIEW_SPLASH, {
-            title: 'Social Media Wargames',
-            auth: request.auth,
-        });
-    }
-    catch (error) {
-        next(errorHandler.httpError(500, MESSAGE_ERROR_INTERNAL));
-    }
+    // Determine if user is logged in
+    // If logged in, render status view
+        // TO DO
+        // response.render(VIEW_SPLASH, {});
+    // If not logged in, render splash view
+    response.render(VIEW_SPLASH, {
+        title: 'Social Media Wargames',
+        auth: request.auth,
+    });
 }
 
-//-- Default Route Handler -----------------------
-function handleDefault(request, response, next) {
-    try {
-        // Determine page to be rendered. Bail if none found.
-        let view = pathViews[request.path.toLowerCase()];
-        if (!view) {
-            next();
-            return;
-        }
-        // Construct rendering context
-        const renderingContext = {
-            title: `Social Media Wargames - ${view}`,
-            auth: request.auth,
-        };
-        // Render Page
-        response.render(view, renderingContext);
-    }
-    catch (error) {
-        next(errorHandler.httpError(500, MESSAGE_ERROR_INTERNAL));
-    }
+//-- About Handler -------------------------------
+function handleAbout(request, response,next) {
+    response.render(VIEW_ABOUT, {
+        title: 'Social Media Wargames - About',
+        auth: request.auth,
+    });
+}
+
+//-- Wargame Handler -----------------------------
+function handleWargame(request, response,next) {
+    response.render(VIEW_WARGAME, {
+        title: 'Social Media Wargames - Current Wargame',
+        auth: request.auth,
+    });
 }
