@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -11,36 +12,38 @@
 </head>
 
 <!--==============PAY ATTENTION SEAN <body> STARTS HERE =====================-->
+
 <body>
 
-<!--=========================================================================-->
-<div class="footer-spacer">
-    <header>
-        <a href="/">
-            <!--img alt="Splash Logo" src="/rsc/img/splash.png" /-->
-            <h1 class="wordmark">Social Media Wargames</h1>
-        </a>
-        <nav>
-        {{#if auth}}
-            <a href="/logout">Logout</a>
-        {{/if}}
-        {{#unless auth}}
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
-        {{/unless}}
-        </nav>
-</div>
-    </header>
-<div class="main">
-  {{{body}}}
-</div>
-<footer>
-    <div class="contact">
-        <span>Concept &amp; Web Design by <a href="http://twitter.com/AntlerPig">JacobABrennan</a></span>
+    <!--=========================================================================-->
+    <div class="footer-spacer">
+        <header>
+            <a href="/">
+                <!--img alt="Splash Logo" src="/rsc/img/splash.png" /-->
+                <h1 class="wordmark">Social Media Wargames</h1>
+            </a>
+            <nav>
+                {{#if auth}}
+                    <a href="/logout">Logout</a>
+                {{/if}}
+                {{#unless auth}}
+                    <a href="/login">Login</a>
+                    <a href="/register">Register</a>
+                {{/unless}}
+            </nav>
     </div>
-</footer>
-<!--=========================================================================-->
+    </header>
+    <div class="main">
+        {{{body}}}
+    </div>
+    <footer>
+        <div class="contact">
+            <span>Concept &amp; Web Design by <a href="http://twitter.com/AntlerPig">JacobABrennan</a></span>
+        </div>
+    </footer>
+    <!--=========================================================================-->
 
 </body>
 <!--====</body> ENDS HERE ===================================================-->
+
 </html>

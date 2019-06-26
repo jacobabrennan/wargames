@@ -69,7 +69,10 @@ footer {
     font-size: 3rem;
     font-weight: bold;
     margin: 1rem 0;
+    border: 1px solid black;
 }
+
+
 body {
     display: flex;
     flex-direction: column;
@@ -80,10 +83,15 @@ body {
 header {
     width: 70vw;
     display: flex;
-    justify-content: space-between;
-    border-bottom: 2px solid #220022;
+    border-bottom: 2px solid darkblue;
     margin-bottom: 0.5rem;
+    color: darkblue;
+    background-color: rgb(192, 184, 184);
+    border-radius: 10px;
 }
+
+
+
 @media (min-width: 500px) {
     header {
         max-width: 95rem;
