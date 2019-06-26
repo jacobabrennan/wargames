@@ -33,23 +33,26 @@ router.get(URL_WRAPPER_WARGAME, handleWargame);
 
 //-- Handle Splash and Status (index) ------------
 function handleIndex(request, response, next) {
-    // Determine if user is logged in
-    // If logged in, render status view
-        // TO DO
-        // response.render(VIEW_SPLASH, {});
-    // If not logged in, render splash view
-    response.render(VIEW_SPLASH, {
-        title: 'Social Media Wargames',
-        auth: request.auth,
-    });
-}
-
-//-- About Handler -------------------------------
-function handleAbout(request, response,next) {
-    response.render(VIEW_ABOUT, {
-        title: 'Social Media Wargames - About',
-        auth: request.auth,
-    });
+    try {
+        // Determine if user is logged in
+        if (request.auth) {
+            response.render(VIEW_STATUS, {
+                title: 'Logged in',
+                auth: request.auth,
+                prop: request.auth.username
+            })
+        }
+        // if request.auth
+        else {
+            response.render(VIEW_SPLASH, {
+                title: 'Social Media Wargames',
+                auth: request.auth,
+            });
+        }
+    }
+    catch (error) {
+        next(errorHandler.httpError(500, MESSAGE_ERROR_INTERNAL));
+    }
 }
 
 //-- Wargame Handler -----------------------------
