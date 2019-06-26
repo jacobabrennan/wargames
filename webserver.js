@@ -39,7 +39,7 @@ try {
     currentGame = require('./current/index.js');
 } catch (error) {
     console.log('Failed to load current game.')
-    throw error
+    // throw error
 }
 
 //-- Middleware ----------------------------------

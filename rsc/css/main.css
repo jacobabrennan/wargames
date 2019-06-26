@@ -45,11 +45,7 @@ html {
     align-items: center;
 }
 
-.authed {
-    background-image: url("../images/wormhole.png");
-}
-
-.unauthed {
+.splash {
     background-image: url("../images/unauthed.jpg")
 }
 

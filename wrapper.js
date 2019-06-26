@@ -3,7 +3,7 @@
 /*== Wrapper Route Handler =====================================================
 
 Exports an Express router which handles the homepage and marketing pages for the
-outter wrapper website. It handles get requests for the about and splash pages
+outer wrapper website. It handles get requests for the about and splash pages
 by rendering simple templates; for logged in users, it replaces the splash page
 with a status page, displaying the status of any currently running wargame. It
 also provides a link to a currently running wargame.
