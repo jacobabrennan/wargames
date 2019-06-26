@@ -12,6 +12,7 @@ html {
 }
 body {
     font-size: 1.6rem;
+    background-image: url("../images/bodyBackground.jpg");
 }
 a:any-link {
     color: inherit;
@@ -24,10 +25,40 @@ a:any-link {
 html {
     background: #ddd;
 }
-main {
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 80vh;
+}
+
+.splash {
+    width: 70vw;
+    height: 70vh;
+    border: 1px solid turquoise;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.authed {
+    background-image: url("../images/wormhole.png");
+}
+
+.unauthed {
+    background-image: url("../images/unauthed.jpg")
+}
+
+.footer-spacer {
 }
 header {
+    /* border: 1px solid red; */
 }
+
 footer {
     background: green;
 }
@@ -48,10 +79,10 @@ body {
     flex-direction: column;
     min-width: 100%;
     min-height: 100%;
-    justify-content: space-between;
+    justify-content: center;
 }
 header {
-    width: 100%;
+    width: 70vw;
     display: flex;
     justify-content: space-between;
     border-bottom: 2px solid #220022;
@@ -83,9 +114,10 @@ header nav a {
     font-size: 2rem;
     padding: 0.5rem 2rem;
     margin: 0.5rem;
-    border: 1px solid black;
+    border: 1px solid turquoise;
     text-align: center;
     border-radius: 0rem;
+    background-color: whitesmoke;
 }
 @media (min-width: 500px) {
     header nav a {
@@ -96,8 +128,11 @@ header nav a:any-link {
     text-decoration: none;
 }
 header nav a:hover {
-    background-color: #fbfbfb;
+    /* background-color: #fbfbfb; */
+    background-color: black;
+    color: white;
 }
+
 header nav a:active {
     color: #ff0000;
 }
