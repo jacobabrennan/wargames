@@ -12,6 +12,7 @@ html {
 }
 body {
     font-size: 1.6rem;
+    background-image: url("../images/bodyBackground.jpg");
 }
 a:any-link {
     color: inherit;
@@ -31,13 +32,25 @@ html {
     align-items: center;
     width: 100vw;
     height: 80vh;
-    border: 1px solid purple;
 }
 
 .splash {
     width: 70vw;
     height: 70vh;
     border: 1px solid turquoise;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.authed {
+    background-image: url("../images/wormhole.png");
+}
+
+.unauthed {
+    background-image: url("../images/unauthed.jpg")
 }
 
 .footer-spacer {
@@ -101,9 +114,10 @@ header nav a {
     font-size: 2rem;
     padding: 0.5rem 2rem;
     margin: 0.5rem;
-    border: 1px solid black;
+    border: 1px solid turquoise;
     text-align: center;
     border-radius: 0rem;
+    background-color: whitesmoke;
 }
 @media (min-width: 500px) {
     header nav a {
