@@ -55,8 +55,16 @@ function handleIndex(request, response, next) {
     }
 }
 
+//-- About Handler -------------------------------
+function handleAbout(request, response, next) {
+    response.render(VIEW_ABOUT, {
+        title: 'Social Media Wargames - About',
+        auth: request.auth,
+    });
+}
+
 //-- Wargame Handler -----------------------------
-function handleWargame(request, response,next) {
+function handleWargame(request, response, next) {
     response.render(VIEW_WARGAME, {
         title: 'Social Media Wargames - Current Wargame',
         auth: request.auth,
