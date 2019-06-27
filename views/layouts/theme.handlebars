@@ -12,21 +12,19 @@
 </head>
 
 <body>
-    <div>
-        <a href="/">
-            <h1 class="wordmark">Social Media War Games</h1>
+    <div class="header">
+        <a href="/" class="header-title">
+            <h1>Social Media War Games</h1>
         </a>
-    </div>
-    <div>
-        <nav>
+        <div class="nav">
             {{#if auth}}
-            <a href="/logout">Logout</a>
+            <a href="/logout" class="a-logout">Logout</a>
             {{/if}}
             {{#unless auth}}
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
+            <a href="/login" class="a-login">Login</a>
+            <a href="/register" class="a-register">Register</a>
             {{/unless}}
-        </nav>
+        </div>
     </div>
     <div class="main">
         {{{body}}}
