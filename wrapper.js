@@ -37,7 +37,7 @@ function handleIndex(request, response, next) {
         // Determine if user is logged in
         if (request.auth) {
             response.render(VIEW_STATUS, {
-                title: 'Logged in',
+                title: 'Logged In',
                 auth: request.auth,
                 prop: request.auth.username
             })

@@ -11,12 +11,34 @@
     <script type="module" src="/rsc/js/main.js"></script>
 </head>
 
+<body>
+    <div>
+        <a href="/">
+            <h1 class="wordmark">Social Media War Games</h1>
+        </a>
+    </div>
+    <div>
+        <nav>
+            {{#if auth}}
+            <a href="/logout">Logout</a>
+            {{/if}}
+            {{#unless auth}}
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            {{/unless}}
+        </nav>
+    </div>
+    <div class="main">
+        {{{body}}}
+    </div>
+</body>
+
+</html>
+
 <!--==============PAY ATTENTION SEAN <body> STARTS HERE =====================-->
 
-<body>
 
-    <!--=========================================================================-->
-    <div class="footer-spacer">
+{{!-- <div class="footer-spacer">
         <header>
             <a href="/">
                 <!--img alt="Splash Logo" src="/rsc/img/splash.png" /-->
@@ -24,26 +46,24 @@
             </a>
             <nav>
                 {{#if auth}}
-                    <a href="/logout">Logout</a>
+                <a href="/logout">Logout</a>
                 {{/if}}
                 {{#unless auth}}
-                    <a href="/login">Login</a>
-                    <a href="/register">Register</a>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
                 {{/unless}}
             </nav>
+        </header>
+        <div class="main">
+            {{{body}}}
+        </div>
     </div>
-    </header>
-    <div class="main">
-        {{{body}}}
-    </div>
+
     <footer>
         <div class="contact">
             <span>Concept &amp; Web Design by <a href="http://twitter.com/AntlerPig">JacobABrennan</a></span>
         </div>
-    </footer>
-    <!--=========================================================================-->
+    </footer> --}}
 
-</body>
+
 <!--====</body> ENDS HERE ===================================================-->
-
-</html>
