@@ -14,15 +14,17 @@
 <body>
     <div class="header">
         <a href="/" class="header-title">
-            <h1>Social Media War Games</h1>
+            <h1 class="header-title-h1">Social Media War Games</h1>
         </a>
         <div class="nav">
             {{#if auth}}
-            <a href="/logout" class="a-logout">Logout</a>
+            <a href="/logout" class="nav-button">Logout</a>
+            <a href="/about" class="nav-button">About</a>
             {{/if}}
             {{#unless auth}}
-            <a href="/login" class="a-login">Login</a>
-            <a href="/register" class="a-register">Register</a>
+            <a href="/login" class="nav-button">Login</a>
+            <a href="/register" class="nav-button">Register</a>
+            <a href="/about" class="nav-button">About</a>
             {{/unless}}
         </div>
     </div>
