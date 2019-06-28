@@ -22,6 +22,44 @@ body {
   background-size: cover;
 }
 
+/*========Styling for main body rendered in theme.handlebars=======*/
+.main {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/*========Styling for /about========================*/
+
+.about {
+  width: 755px;
+  height: 95%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid brown;
+}
+
+.lorem-ipsum {
+  width: 75%;
+  height: 24%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid magenta;
+}
+
+ipsum-header {
+
+}
+
+/*========Styling for theme.handlebars==============*/
+
 .header {
   display: flex;
   flex-direction: column;
@@ -35,12 +73,24 @@ body {
 .header-title {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 25vh;
-  border: 1px solid red;
-  margin-bottom: 5px;
+  height: 18vh;
+  /* border: 1px solid red; */
+  /* margin-bottom: 5px; */
+}
+
+.header-title-a {
+    /* width: 100%;
+    height: 100%;
+    I once wrote a 
+    very sophisticated
+    piece of software
+    called the Python
+    Parrot Bomb.
+    */
+    /* border: 3px solid yellow; */
 }
 /* sudo apt-get install easter-egg-comments */
 .header-title-h1 {
@@ -70,11 +120,11 @@ body {
 
 .nav {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: flex-end;
-  width: 80vw;
+  width: 360px;
   height: 30px;
-  border: 1px solid gold;
+  /* border: 1px solid gold; */
 }
 
 .nav-button {
@@ -84,10 +134,10 @@ body {
   width: 100px;
   height: 100%;
   border: 3px solid rgb(95, 90, 90);
-  border-radius: 5px;
+  border-radius: 20px;
   font-weight: bold;
   background-color: rgb(85, 129, 155);
-  margin: 1px;
+  /* margin: 1px; */
   color: rgb(233, 225, 225) !important;
 }
 
@@ -105,10 +155,4 @@ body {
 a:any-link {
   color: inherit;
   text-decoration: none;
-}
-
-.about {
-  height: 100vh;
-  width: 100vw;
-  background-color: purple;
 }
